@@ -73,3 +73,101 @@ def fetch_all_posts(client, group_id, max_pages=50, logger=None):
                 seen.add(pid)
                 posts.append(p)
                 added += 1
+        if logger: logger(f"[Pagination] Page {pages} -> found {len(new_posts)} posts, added {added}")
+
+        next_link = find_next_page_link(r.text)
+        if not next_link:
+            break
+        if next_link.startswith("https://mbasic.facebook.com"):
+            page_url = next_link.replace("https://mbasic.facebook.com", "")
+        else:
+            page_url = next_link
+        time.sleep(random.uniform(1.0, 2.0))
+
+    if logger: logger(f"[Pagination] Completed. Total unique posts: {len(posts)} (pages fetched: {pages})")
+    return posts
+
+def react_post_simple(client, post_id, logger=None, retries=3):
+    post_url = f"https://mbasic.facebook.com/story.php?story_fbid={post_id}"
+    attempt = 0
+    while attempt < retries:
+        attempt += 1
+        try:
+            r = client.get(post_url)
+        except Exception as e:
+            if logger: logger(f"[React] Request error on post {post_id}: {e} (attempt {attempt})")
+            time.sleep(1 + attempt)
+            continue
+        if r.status_code != 200:
+            return False, f"status_{r.status_code}"
+        soup = BeautifulSoup(r.text, "html.parser")  # ✅ changed
+        like_link = None
+        for a in soup.find_all("a", href=True):
+            text = (a.get_text() or "").strip().lower()
+            if text == "like" or "like this" in text or text.startswith("like"):
+                like_link = a["href"]
+                break
+        if not like_link:
+            for a in soup.find_all("a", href=True):
+                if "reaction" in a["href"] or "ufi/reaction" in a["href"]:
+                    like_link = a["href"]
+                    break
+        if not like_link:
+            return False, "no_like_link"
+        target = like_link if like_link.startswith("http") else ("https://mbasic.facebook.com" + like_link)
+        try:
+            r2 = client.get(target)
+            return (r2.status_code == 200), f"followed:{r2.status_code}"
+        except Exception as e:
+            if logger: logger(f"[React] follow error on post {post_id}: {e} (attempt {attempt})")
+            time.sleep(1 + attempt)
+    return False, "failed_after_retries"
+
+def comment_on_post(client, post_id, text, logger=None, retries=3):
+    post_url = f"https://mbasic.facebook.com/story.php?story_fbid={post_id}"
+    attempt = 0
+    while attempt < retries:
+        attempt += 1
+        try:
+            r = client.get(post_url)
+        except Exception as e:
+            if logger: logger(f"[Comment] Request error on post {post_id}: {e} (attempt {attempt})")
+            time.sleep(1 + attempt)
+            continue
+        if r.status_code != 200:
+            return False, f"status_{r.status_code}"
+        soup = BeautifulSoup(r.text, "html.parser")  # ✅ changed
+        form = None
+        for f in soup.find_all("form", action=True):
+            if f.find("input", {"name": "comment_text"}) or "comment" in (f.get("action") or ""):
+                form = f
+                break
+        if form is None:
+            form = soup.find("form", action=True)
+        if form is None:
+            return False, "no_comment_form"
+        action = form.get("action")
+        if not action.startswith("http"):
+            action = "https://mbasic.facebook.com" + action
+        data = {}
+        for inp in form.find_all("input"):
+            name = inp.get("name")
+            if not name:
+                continue
+            value = inp.get("value", "")
+            data[name] = value
+        data["comment_text"] = text
+        try:
+            r2 = client.post(action, data=data)
+            if r2.status_code == 200:
+                if text in r2.text:
+                    return True, "posted"
+                return True, "posted_but_not_verified"
+            else:
+                if logger: logger(f"[Comment] status {r2.status_code} on post {post_id} (attempt {attempt})")
+                time.sleep(1 + attempt)
+                continue
+        except Exception as e:
+            if logger: logger(f"[Comment] post error on post {post_id}: {e} (attempt {attempt})")
+            time.sleep(1 + attempt)
+    return False, "failed_after_retries"
