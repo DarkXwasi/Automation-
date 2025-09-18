@@ -29,7 +29,7 @@
 
 1. Clone repo
 
-git clone https://github.com/your-username/Automation.git
+git clone https://github.com/DarkXwasi/Automation-/tree/main
 cd Automation
 
 2. Install requirements
