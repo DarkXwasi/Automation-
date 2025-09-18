@@ -1,0 +1,49 @@
+{
+  "dry_run": false,                       
+
+  "accounts": [
+    {
+      "uid": "100090447430959",
+      "cookie": "dbln=%7B%22100090447430959%22%3A%22vWMAENgp%22%7D; sb=9DtRaHch39PLScPkUqNL67_L; datr=NKK9aFN2rr-3s9CZDazIieM5; pas=100090447430959%3AvkwSZZVzgN; vpd=v1%3B632x360x2; ps_l=1; ps_n=1; c_user=100090447430959; xs=47%3AhgTfojVy2CUgXw%3A2%3A1757337202%3A-1%3A-1; m_pixel_ratio=2; wd=360x760; locale=en_GB; x-referer=eyJyIjoiLz9yYW5kPTIwMTM2MzE0MDEiLCJoIjoiLz9yYW5kPTIwMTM2MzE0MDEiLCJzIjoibSJ9; fr=0SgQlEPezbW1aP30X.AWfgq3ytCdyDbV6Ta84r--rjEs8u66PyHrxWxQYShs4_hSc5B2k.BovaI0..AAA.0.0.BoylD9.AWfdCnsg7lL7zBzBYDEKNn5JwI8; fbl_st=101231543%3BT%3A29301491; wl_cbv=v2%3Bclient_version%3A2924%3Btimestamp%3A1758089469",
+      "active": true
+    }
+  ],
+
+  "group": {
+    "id": "1297679682137901",
+    "comment_texts": [
+      "❤️",
+      "❤️🔥",
+      "❤️👌",
+      "❤️💯",
+      "❤️😎",
+      "❤️🙌",
+      "❤️🥶",
+      "❤️🤯",
+      "❤️🤝",
+      "❤️🖤",
+      "😐",
+      "😐💭",
+      "😐...",
+      "😐👌",
+      "😐🙄",
+      "😐😶",
+      "😐🤐",
+      "😐🤔",
+      "😐👀",
+      "😐🕶️"
+    ],
+    "reactions": ["like", "love", "care", "wow"],
+    "max_pages": 50
+  },
+
+  "settings": {
+    "reaction_delay_min": 10,
+    "reaction_delay_max": 20,
+    "comment_delay_min": 15,
+    "comment_delay_max": 25,
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36",
+    "log_file": "logs/fb-bot.log",
+    "max_actions_per_account": 0
+  }
+}
