@@ -1,78 +1,97 @@
+import os
 import json
-import random
 import time
-from modules.group_actions import fetch_all_posts, react_post_simple, comment_on_post
-from modules.client import FacebookClient  # ✅ assume tumhare paas client hai
+import random
+from modules.group_actions import fetch_all_posts, comment_on_post, react_post_simple, join_group
+from modules.client import FBClient
 
+CONFIG_FILE = "config.json"
 
-# Logger function
-def log(msg):
-    print(msg)
+def load_config():
+    if not os.path.exists(CONFIG_FILE):
+        print("❌ Config file not found!")
+        return None
+    with open(CONFIG_FILE, "r") as f:
+        return json.load(f)
 
+def save_config(config):
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f, indent=2)
+
+def clear_screen():
+    os.system("clear" if os.name == "posix" else "cls")
+
+def print_banner():
+    print("══════════════════════════════════════════════")
+    print("      ✨🔥 W A S I   A U T O M A T I O N 🔥✨   ")
+    print("══════════════════════════════════════════════")
+
+def menu():
+    clear_screen()
+    print_banner()
+    print("\n[1] Fetch Posts")
+    print("[2] React on Posts")
+    print("[3] Comment on Posts")
+    print("[4] Join Group")
+    print("[5] Exit\n")
+    choice = input("👉 Select option: ")
+    return choice
 
 def main():
-    # Load config.json
-    with open("config.json", "r") as f:
-        config = json.load(f)
+    config = load_config()
+    if not config:
+        return
 
-    accounts = [a for a in config["accounts"] if a.get("active")]
-    group_id = config["group"]["id"]
-    comments = config["group"]["comment_texts"]
-    reactions = config["group"]["reactions"]
-    max_pages = config["group"].get("max_pages", 50)
+    accounts = config.get("accounts", [])
+    group = config.get("group", {})
+    settings = config.get("settings", {})
 
-    log(f"[Config] Loaded {len(accounts)} active accounts.")
-    log(f"[Config] Target Group: {group_id}")
+    if not accounts:
+        print("❌ No accounts found in config.json")
+        return
 
-    # Process each account
-    for acc in accounts:
-        uid = acc["uid"]
-        cookie = acc["cookie"]
-        log(f"\n[Account] Starting for UID {uid}...")
+    account = accounts[0]
+    client = FBClient(account["cookie"], settings.get("user_agent", None))
 
-        # Login client
-        client = FacebookClient(cookie, config["settings"]["user_agent"])
-        if not client.is_logged_in():
-            log(f"[Login] Failed for UID {uid}, skipping.")
-            continue
+    while True:
+        choice = menu()
 
-        # Fetch posts
-        posts = fetch_all_posts(client, group_id, max_pages=max_pages, logger=log)
-        if not posts:
-            log(f"[Posts] No posts found for group {group_id}.")
-            continue
+        # ✅ Fetch Posts
+        if choice == "1":
+            posts = fetch_all_posts(client, group["id"], max_pages=group.get("max_pages", 5), logger=print)
+            print(f"✅ Total {len(posts)} posts fetched")
+            input("\nPress Enter to continue...")
 
-        log(f"[Posts] Found {len(posts)} posts in group {group_id}")
+        # ✅ React
+        elif choice == "2":
+            posts = fetch_all_posts(client, group["id"], max_pages=1, logger=print)
+            for p in posts:
+                reaction = random.choice(group.get("reactions", ["like"]))
+                react_post_simple(client, p["post_id"], reaction, logger=print)
+                time.sleep(random.uniform(settings["reaction_delay_min"], settings["reaction_delay_max"]))
+            input("\n✅ Reactions done! Press Enter...")
 
-        # Loop through posts
-        for idx, post in enumerate(posts, 1):
-            pid = post["post_id"]
-            purl = post["post_url"]
-            log(f"\n[Post {idx}] {purl}")
+        # ✅ Comment
+        elif choice == "3":
+            posts = fetch_all_posts(client, group["id"], max_pages=1, logger=print)
+            for p in posts:
+                text = random.choice(group.get("comment_texts", ["🔥🔥🔥"]))
+                comment_on_post(client, p["post_id"], text, logger=print)
+                time.sleep(random.uniform(settings["comment_delay_min"], settings["comment_delay_max"]))
+            input("\n✅ Comments done! Press Enter...")
 
-            # React
-            reaction = random.choice(reactions)
-            ok, msg = react_post_simple(client, pid, logger=log)
-            log(f"[React] Reaction={reaction}, Status={ok}, Msg={msg}")
+        # ✅ Join Group
+        elif choice == "4":
+            join_group(client, group["id"], logger=print)
+            input("\n✅ Join request sent! Press Enter...")
 
-            # Comment
-            text = random.choice(comments)
-            ok, msg = comment_on_post(client, pid, text, logger=log)
-            log(f"[Comment] Text='{text}', Status={ok}, Msg={msg}")
+        elif choice == "5":
+            print("👋 Exiting... Bye Waseem 👑")
+            break
 
-            # Delay (anti-ban)
-            rdelay = random.randint(
-                config["settings"]["reaction_delay_min"],
-                config["settings"]["reaction_delay_max"],
-            )
-            cdelay = random.randint(
-                config["settings"]["comment_delay_min"],
-                config["settings"]["comment_delay_max"],
-            )
-            total_sleep = rdelay + cdelay
-            log(f"[Delay] Sleeping {total_sleep} seconds...")
-            time.sleep(total_sleep)
-
+        else:
+            print("❌ Invalid choice!")
+            time.sleep(1)
 
 if __name__ == "__main__":
     main()
