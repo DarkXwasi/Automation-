@@ -142,7 +142,7 @@ def comment_on_post(client, post_id, text, logger=None, dry_run=True):
             action = urljoin(BASE, action)
 
         data = {}
-        for inp in form.find_all("input"):
+        for inp in soup.find_all("input"):
             name = inp.get("name")
             value = inp.get("value", "")
             if name == "comment_text":
