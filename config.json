@@ -1,10 +1,10 @@
 {
-  "dry_run": false,                       
+  "dry_run": false,
 
   "accounts": [
     {
       "uid": "100090447430959",
-      "cookie": "dbln=%7B%22100090447430959%22%3A%22vWMAENgp%22%7D; sb=9DtRaHch39PLScPkUqNL67_L; datr=NKK9aFN2rr-3s9CZDazIieM5; pas=100090447430959%3AvkwSZZVzgN; vpd=v1%3B632x360x2; ps_l=1; ps_n=1; c_user=100090447430959; xs=47%3AhgTfojVy2CUgXw%3A2%3A1757337202%3A-1%3A-1; m_pixel_ratio=2; wd=360x760; locale=en_GB; x-referer=eyJyIjoiLz9yYW5kPTIwMTM2MzE0MDEiLCJoIjoiLz9yYW5kPTIwMTM2MzE0MDEiLCJzIjoibSJ9; fr=0SgQlEPezbW1aP30X.AWfgq3ytCdyDbV6Ta84r--rjEs8u66PyHrxWxQYShs4_hSc5B2k.BovaI0..AAA.0.0.BoylD9.AWfdCnsg7lL7zBzBYDEKNn5JwI8; fbl_st=101231543%3BT%3A29301491; wl_cbv=v2%3Bclient_version%3A2924%3Btimestamp%3A1758089469",
+      "cookie": "dbln=%7B%22100090447430959%22%3A%22SxCuVT0h%22%7D; sb=9DtRaHch39PLScPkUqNL67_L; datr=0djMaFBbUPdBhfFccLRObQ1k; m_pixel_ratio=2; wd=360x760; c_user=100090447430959; xs=11%3AcFr0o2tT7RA1EQ%3A2%3A1758255420%3A-1%3A-1; fr=0I3y4KhlBNpOm8z0h.AWcdEhDbGHp9siqlDwE6hkEvWRkSLj7Unx4efUgDo4XAB_l9Q8o.BozNjR..AAA.0.0.BozNlH.AWcBTZuoxV9slOQwXoBiNB5Gsv8; locale=en_GB; pas=100090447430959%3AvkwSZZVzgN; wl_cbv=v2%3Bclient_version%3A2927%3Btimestamp%3A1758255432; fbl_st=100731529%3BT%3A29304257; vpd=v1%3B632x360x2",
       "active": true
     }
   ],
@@ -34,7 +34,7 @@
       "😐🕶️"
     ],
     "reactions": ["like", "love", "care", "wow"],
-    "max_pages": 50
+    "max_pages": 100
   },
 
   "settings": {
